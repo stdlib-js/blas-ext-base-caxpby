@@ -1,0 +1,490 @@
+<!--
+
+@license Apache-2.0
+
+Copyright (c) 2026 The Stdlib Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+
+<details>
+  <summary>
+    About stdlib...
+  </summary>
+  <p>We believe in a future in which the web is a preferred environment for numerical computation. To help realize this future, we've built stdlib. stdlib is a standard library, with an emphasis on numerical and scientific computation, written in JavaScript (and C) for execution in browsers and in Node.js.</p>
+  <p>The library is fully decomposable, being architected in such a way that you can swap out and mix and match APIs and functionality to cater to your exact preferences and use cases.</p>
+  <p>When you use stdlib, you can be absolutely certain that you are using the most thorough, rigorous, well-written, studied, documented, tested, measured, and high-quality code out there.</p>
+  <p>To join us in bringing numerical computing to the web, get started by checking us out on <a href="https://github.com/stdlib-js/stdlib">GitHub</a>, and please consider <a href="https://opencollective.com/stdlib">financially supporting stdlib</a>. We greatly appreciate your continued support!</p>
+</details>
+
+# caxpby
+
+[![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
+
+> Multiply a single-precision complex floating-point strided array `x` by a constant and add the result to a single-precision complex floating-point strided array `y` multiplied by a constant.
+
+<section class="intro">
+
+This BLAS extension implements the operation
+
+<!-- <equation class="equation" label="eq:axpby" align="center" raw="\mathbf{y} = \alpha \mathbf{x} + \beta \mathbf{y}" alt="Equation for axpby operation."> -->
+
+```math
+\mathbf{y} = \alpha \mathbf{x} + \beta \mathbf{y}
+```
+
+<!-- </equation> -->
+
+This API is complementary to the package [`@stdlib/blas-base/caxpy`][@stdlib/blas/base/caxpy] and is a common BLAS extension in libraries such as Intel MKL, OpenBLAS, and others.
+
+</section>
+
+<!-- /.intro -->
+
+<section class="installation">
+
+## Installation
+
+```bash
+npm install @stdlib/blas-ext-base-caxpby
+```
+
+Alternatively,
+
+-   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
+-   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
+-   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
+
+The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
+
+To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
+
+</section>
+
+<section class="usage">
+
+## Usage
+
+```javascript
+var caxpby = require( '@stdlib/blas-ext-base-caxpby' );
+```
+
+#### caxpby( N, alpha, x, strideX, beta, y, strideY )
+
+Multiplies a single-precision complex floating-point strided array `x` by a constant and adds the result to a single-precision complex floating-point strided array `y` multiplied by a constant.
+
+```javascript
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+
+var x = new Complex64Array( [ 1.0, 2.0, 3.0, -1.0, 0.0, 1.0 ] );
+var y = new Complex64Array( [ 2.0, 1.0, -1.0, 3.0, 4.0, 0.0 ] );
+
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby( x.length, alpha, x, 1, beta, y, 1 );
+// y => <Complex64Array>[ 3.0, 4.0, 9.0, 5.0, 3.0, -2.0 ]
+```
+
+The function has the following parameters:
+
+-   **N**: number of indexed elements.
+-   **alpha**: first scalar constant.
+-   **x**: input [`Complex64Array`][@stdlib/array/complex64].
+-   **strideX**: stride length for `x`.
+-   **beta**: second scalar constant.
+-   **y**: output [`Complex64Array`][@stdlib/array/complex64].
+-   **strideY**: stride length for `y`.
+
+The `N` and stride parameters determine which elements in the strided arrays are accessed at runtime. For example, to multiply every other element of `x` by `alpha` and add to every other element of `y` multiplied by `beta`:
+
+```javascript
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+
+var x = new Complex64Array( [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 ] );
+var y = new Complex64Array( [ 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0 ] );
+
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby( 2, alpha, x, 2, beta, y, 2 );
+// y => <Complex64Array>[ 15.0, 6.0, 9.0, 10.0, 27.0, 18.0, 13.0, 14.0 ]
+```
+
+Note that indexing is relative to the first index. To introduce an offset, use [`typed array`][mdn-typed-array] views.
+
+<!-- eslint-disable max-len -->
+
+```javascript
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+
+// Initial arrays...
+var x0 = new Complex64Array( [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 ] );
+var y0 = new Complex64Array( [ 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ] );
+
+// Create offset views...
+var x1 = new Complex64Array( x0.buffer, x0.BYTES_PER_ELEMENT*1 ); // start at 2nd element
+var y1 = new Complex64Array( y0.buffer, y0.BYTES_PER_ELEMENT*2 ); // start at 3rd element
+
+// Define scalar constants:
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby( 3, alpha, x1, 1, beta, y1, 1 );
+// y0 => <Complex64Array>[ 7.0, 8.0, 9.0, 10.0, 25.0, 12.0, 31.0, 18.0, 37.0, 24.0 ]
+```
+
+#### caxpby.ndarray( N, alpha, x, strideX, offsetX, beta, y, strideY, offsetY )
+
+Multiplies a single-precision complex floating-point strided array `x` by a constant and adds the result to a single-precision complex floating-point strided array `y` multiplied by a constant using alternative indexing semantics.
+
+```javascript
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+
+var x = new Complex64Array( [ 1.0, 2.0, 3.0, -1.0, 0.0, 1.0 ] );
+var y = new Complex64Array( [ 2.0, 1.0, -1.0, 3.0, 4.0, 0.0 ] );
+
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby.ndarray( x.length, alpha, x, 1, 0, beta, y, 1, 0 );
+// y => <Complex64Array>[ 3.0, 4.0, 9.0, 5.0, 3.0, -2.0 ]
+```
+
+The function has the following additional parameters:
+
+-   **offsetX**: starting index for `x`.
+-   **offsetY**: starting index for `y`.
+
+While [`typed array`][mdn-typed-array] views mandate a view offset based on the underlying buffer, the offset parameters support indexing semantics based on starting indices. For example, to multiply the last three elements of `x` by `alpha` and add to the last three elements of `y` multiplied by `beta`:
+
+<!-- eslint-disable max-len -->
+
+```javascript
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+
+var x = new Complex64Array( [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 ] );
+var y = new Complex64Array( [ 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0 ] );
+
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby.ndarray( 3, alpha, x, 1, x.length-3, beta, y, 1, y.length-3 );
+// y => <Complex64Array>[ 11.0, 12.0, 13.0, 14.0, 35.0, 18.0, 41.0, 24.0, 47.0, 30.0 ]
+```
+
+</section>
+
+<!-- /.usage -->
+
+<section class="notes">
+
+## Notes
+
+-   If `N <= 0`, both functions return `y` unchanged.
+
+</section>
+
+<!-- /.notes -->
+
+<section class="examples">
+
+## Examples
+
+<!-- eslint no-undef: "error" -->
+
+```javascript
+var discreteUniform = require( '@stdlib/random-array-discrete-uniform' );
+var Complex64Array = require( '@stdlib/array-complex64' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+var logEach = require( '@stdlib/console-log-each' );
+var caxpby = require( '@stdlib/blas-ext-base-caxpby' );
+
+var xbuf = discreteUniform( 20, -100, 100, {
+    'dtype': 'float32'
+});
+var ybuf = discreteUniform( 20, -100, 100, {
+    'dtype': 'float32'
+});
+var x = new Complex64Array( xbuf.buffer );
+var y = new Complex64Array( ybuf.buffer );
+var alpha = new Complex64( 2.0, 1.0 );
+var beta = new Complex64( 1.0, -1.0 );
+
+caxpby( x.length, alpha, x, 1, beta, y, 1 );
+logEach( '%s', y );
+```
+
+</section>
+
+<!-- /.examples -->
+
+<!-- C interface documentation. -->
+
+* * *
+
+<section class="c">
+
+## C APIs
+
+<!-- Section to include introductory text. Make sure to keep an empty line after the intro `section` element and another before the `/section` close. -->
+
+<section class="intro">
+
+</section>
+
+<!-- /.intro -->
+
+<!-- C usage documentation. -->
+
+<section class="usage">
+
+### Usage
+
+```c
+#include "stdlib/blas/ext/base/caxpby.h"
+```
+
+#### stdlib_strided_caxpby( N, alpha, \*X, strideX, beta, \*Y, strideY )
+
+Multiplies a single-precision complex floating-point strided array `x` by a constant and adds the result to a single-precision complex floating-point strided array `y` multiplied by a constant.
+
+```c
+#include "stdlib/complex/float32/ctor.h"
+
+const float x[] = { 1.0f, -2.0f, 3.0f, -4.0f, 5.0f, -6.0f, 7.0f, -8.0f };
+float y[] = { 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+const stdlib_complex64_t alpha = stdlib_complex64( 2.0f, 1.0f );
+const stdlib_complex64_t beta = stdlib_complex64( 1.0f, -1.0f );
+
+stdlib_strided_caxpby( 4, alpha, (stdlib_complex64_t *)x, 1, beta, (stdlib_complex64_t *)y, 1 );
+```
+
+The function accepts the following arguments:
+
+-   **N**: `[in] CBLAS_INT` number of indexed elements.
+-   **alpha**: `[in] stdlib_complex64_t` first scalar constant.
+-   **X**: `[in] stdlib_complex64_t*` input array.
+-   **strideX**: `[in] CBLAS_INT` stride length for `X`.
+-   **beta**: `[in] stdlib_complex64_t` second scalar constant.
+-   **Y**: `[inout] stdlib_complex64_t*` output array.
+-   **strideY**: `[in] CBLAS_INT` stride length for `Y`.
+
+```c
+void stdlib_strided_caxpby( const CBLAS_INT N, const stdlib_complex64_t alpha, const stdlib_complex64_t *X, const CBLAS_INT strideX, const stdlib_complex64_t beta, stdlib_complex64_t *Y, const CBLAS_INT strideY );
+```
+
+<!--lint disable maximum-heading-length-->
+
+#### stdlib_strided_caxpby_ndarray( N, alpha, \*X, strideX, offsetX, beta, \*Y, strideY, offsetY )
+
+<!--lint enable maximum-heading-length-->
+
+Multiplies a single-precision complex floating-point strided array `x` by a constant and adds the result to a single-precision complex floating-point strided array `y` multiplied by a constant using alternative indexing semantics.
+
+```c
+#include "stdlib/complex/float32/ctor.h"
+
+const float x[] = { 1.0f, -2.0f, 3.0f, -4.0f, 5.0f, -6.0f, 7.0f, -8.0f };
+float y[] = { 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+const stdlib_complex64_t alpha = stdlib_complex64( 2.0f, 1.0f );
+const stdlib_complex64_t beta = stdlib_complex64( 1.0f, -1.0f );
+
+stdlib_strided_caxpby_ndarray( 4, alpha, (stdlib_complex64_t *)x, 1, 0, beta, (stdlib_complex64_t *)y, 1, 0 );
+```
+
+The function accepts the following arguments:
+
+-   **N**: `[in] CBLAS_INT` number of indexed elements.
+-   **alpha**: `[in] stdlib_complex64_t` first scalar constant.
+-   **X**: `[in] stdlib_complex64_t*` input array.
+-   **strideX**: `[in] CBLAS_INT` stride length for `X`.
+-   **offsetX**: `[in] CBLAS_INT` starting index for `X`.
+-   **beta**: `[in] stdlib_complex64_t` second scalar constant.
+-   **Y**: `[inout] stdlib_complex64_t*` output array.
+-   **strideY**: `[in] CBLAS_INT` stride length for `Y`.
+-   **offsetY**: `[in] CBLAS_INT` starting index for `Y`.
+
+```c
+void stdlib_strided_caxpby_ndarray( const CBLAS_INT N, const stdlib_complex64_t alpha, const stdlib_complex64_t *X, const CBLAS_INT strideX, const CBLAS_INT offsetX, const stdlib_complex64_t beta, stdlib_complex64_t *Y, const CBLAS_INT strideY, const CBLAS_INT offsetY );
+```
+
+</section>
+
+<!-- /.usage -->
+
+<!-- C API usage notes. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+<section class="notes">
+
+</section>
+
+<!-- /.notes -->
+
+<!-- C API usage examples. -->
+
+<section class="examples">
+
+### Examples
+
+```c
+#include "stdlib/blas/ext/base/caxpby.h"
+#include "stdlib/complex/float32/ctor.h"
+#include "stdlib/complex/float32/real.h"
+#include "stdlib/complex/float32/imag.h"
+#include <stdio.h>
+
+int main( void ) {
+    // Create strided arrays:
+    const stdlib_complex64_t x[] = {
+        stdlib_complex64( 1.0f, -2.0f ),
+        stdlib_complex64( 3.0f, -4.0f ),
+        stdlib_complex64( 5.0f, -6.0f ),
+        stdlib_complex64( 7.0f, -8.0f )
+    };
+    stdlib_complex64_t y[] = {
+        stdlib_complex64( 2.0f, 3.0f ),
+        stdlib_complex64( 4.0f, 5.0f ),
+        stdlib_complex64( 6.0f, 7.0f ),
+        stdlib_complex64( 8.0f, 9.0f )
+    };
+
+    // Specify the number of indexed elements:
+    const int N = 4;
+
+    // Specify strides:
+    const int strideX = 1;
+    const int strideY = 1;
+
+    // Define scalar constants:
+    stdlib_complex64_t alpha = stdlib_complex64( 2.0f, 1.0f );
+    stdlib_complex64_t beta = stdlib_complex64( 1.0f, -1.0f );
+
+    // Multiply `x` by a constant and add to `y` multiplied by a constant:
+    stdlib_strided_caxpby( N, alpha, x, strideX, beta, y, strideY );
+
+    // Print the result:
+    for ( int i = 0; i < N; i++ ) {
+        printf( "y[ %i ] = %f + %fi\n", i, stdlib_complex64_real( y[ i ] ), stdlib_complex64_imag( y[ i ] ) );
+    }
+}
+```
+
+</section>
+
+<!-- /.examples -->
+
+</section>
+
+<!-- /.c -->
+
+<!-- Section for related `stdlib` packages. Do not manually edit this section, as it is automatically populated. -->
+
+<section class="related">
+
+</section>
+
+<!-- /.related -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+
+<section class="main-repo" >
+
+* * *
+
+## Notice
+
+This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+
+For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
+
+#### Community
+
+[![Chat][chat-image]][chat-url]
+
+---
+
+## License
+
+See [LICENSE][stdlib-license].
+
+
+## Copyright
+
+Copyright &copy; 2016-2026. The Stdlib [Authors][stdlib-authors].
+
+</section>
+
+<!-- /.stdlib -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+<section class="links">
+
+[npm-image]: http://img.shields.io/npm/v/@stdlib/blas-ext-base-caxpby.svg
+[npm-url]: https://npmjs.org/package/@stdlib/blas-ext-base-caxpby
+
+[test-image]: https://github.com/stdlib-js/blas-ext-base-caxpby/actions/workflows/test.yml/badge.svg?branch=main
+[test-url]: https://github.com/stdlib-js/blas-ext-base-caxpby/actions/workflows/test.yml?query=branch:main
+
+[coverage-image]: https://img.shields.io/codecov/c/github/stdlib-js/blas-ext-base-caxpby/main.svg
+[coverage-url]: https://codecov.io/github/stdlib-js/blas-ext-base-caxpby?branch=main
+
+<!--
+
+[dependencies-image]: https://img.shields.io/david/stdlib-js/blas-ext-base-caxpby.svg
+[dependencies-url]: https://david-dm.org/stdlib-js/blas-ext-base-caxpby/main
+
+-->
+
+[chat-image]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
+[chat-url]: https://stdlib.zulipchat.com
+
+[stdlib]: https://github.com/stdlib-js/stdlib
+
+[stdlib-authors]: https://github.com/stdlib-js/stdlib/graphs/contributors
+
+[umd]: https://github.com/umdjs/umd
+[es-module]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+
+[deno-url]: https://github.com/stdlib-js/blas-ext-base-caxpby/tree/deno
+[deno-readme]: https://github.com/stdlib-js/blas-ext-base-caxpby/blob/deno/README.md
+[umd-url]: https://github.com/stdlib-js/blas-ext-base-caxpby/tree/umd
+[umd-readme]: https://github.com/stdlib-js/blas-ext-base-caxpby/blob/umd/README.md
+[esm-url]: https://github.com/stdlib-js/blas-ext-base-caxpby/tree/esm
+[esm-readme]: https://github.com/stdlib-js/blas-ext-base-caxpby/blob/esm/README.md
+[branches-url]: https://github.com/stdlib-js/blas-ext-base-caxpby/blob/main/branches.md
+
+[stdlib-license]: https://raw.githubusercontent.com/stdlib-js/blas-ext-base-caxpby/main/LICENSE
+
+[@stdlib/array/complex64]: https://github.com/stdlib-js/array-complex64
+
+[@stdlib/blas/base/caxpy]: https://github.com/stdlib-js/blas-base-caxpy
+
+[mdn-typed-array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
+
+<!-- <related-links> -->
+
+<!-- </related-links> -->
+
+</section>
+
+<!-- /.links -->
